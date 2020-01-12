@@ -1,4 +1,4 @@
-# mygoodshopvue01
+# mygoodshopvue
 
 ## Project setup
 ```
