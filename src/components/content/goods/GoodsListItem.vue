@@ -1,6 +1,8 @@
 <template>
-  <div class="goods-item">
-    <img :src="goodsItem.show.img" alt="">
+  <div class="goods-item" @click="itemClick">
+    <!-- <img :src="goodsItem.show.img" alt="" @load="imageLoad"> -->
+    <!-- <img v-lazy="getImg" :key="getImg" alt="" @load="imageLoad"> -->
+    <img :src="getImg" alt="" @load="imageLoad">
     <div class="goods-info">
       <p>{{goodsItem.title}}</p>
       <span class="price">{{goodsItem.price}}</span>
@@ -18,6 +20,22 @@
         default() {
           return {}
         }
+      }
+    },
+    computed: {
+      getImg() {
+        return this.goodsItem.img || this.goodsItem.image || this.goodsItem.show.img
+      }
+    },
+
+    methods: {
+      imageLoad() {
+        // 把这个itemImageLoad事件发送出去
+        this.$bus.$emit('itemImageLoad')
+      },
+      itemClick() {
+        // console.log('跳转详情页')
+        this.$router.push('/detail/' + this.goodsItem.iid)
       }
     }
   }
