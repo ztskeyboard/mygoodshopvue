@@ -4,9 +4,13 @@
     <nav-bar class="cart-nav">
       <div slot="center">购物车({{cartLength}})</div>
     </nav-bar>
+    <div v-if="this.cartLength == 0">
+      <van-button class="vbut" round type="primary" to="/home">快去购物吧</van-button>
+    </div>
     <!-- 商品列表 -->
+    <div v-if="this.cartLength > 0">
     <cart-list class="cart-list" :cart-list="CartList"></cart-list>
-
+    </div>
     <!-- 底部汇总 -->
     <bottom-bar></bottom-bar>
   </div>
@@ -71,5 +75,10 @@ absolute：定位是相对于离元素最近的设置了绝对或相对定位的
   top: 44px;
   bottom: 49px;
   width: 100%;
+}
+.vbut {
+  position: absolute;
+  top: 40%;
+  right: 35%;
 }
 </style>
