@@ -25,6 +25,7 @@
     },
     data() {
       return {
+        // 定义一个空对象
         scroll: null
       }
     },

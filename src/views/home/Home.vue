@@ -23,8 +23,8 @@
       <goods-list :goods="showGoods"/>
     </scroll>
     <!-- 组件不可直接被监听，click方法不可直接用，必须加.native这个属性，然后才可监听组件 -->
-    <!-- v-show标签，是否显示该组件 -->
-    <back-top @click.native="backClick" v-show="isShowBackTop"/>
+    <!-- v-show标签，是否显示该组件,backTop这个方法封装在mixin混入文件中 -->
+    <back-top @click.native="backTop" v-show="showBackTop"/>
   </div>
 </template>
 
@@ -34,15 +34,17 @@ import NavBar from 'components/common/navbar/NavBar';
 import TabControl from 'components/content/tabControl/TabControl';
 import GoodsList from 'components/content/goods/GoodsList';
 import Scroll from 'components/common/scroll/Scroll';
-import BackTop from 'components/content/backTop/BackTop'
+import BackTop from 'components/content/backTop/BackTop';
 
 import HomeSwiper from './childComps/HomeSwiper';
 import RecommendView from './childComps/RecommendView';
 import FeatureView from './childComps/FeatureView';
 
 import {getHomeMultidata,getHomeGoods} from 'network/home';
+
 import {debounce} from 'common/utils';
-import {itemListenerMixin} from 'common/mixin';
+import {itemListenerMixin,backTopMixin} from 'common/mixin';
+import {NEW, POP, SELL, BACKTOP_DISTANCE} from "common/const";
 
   export default {
     name: "Home",
@@ -57,7 +59,7 @@ import {itemListenerMixin} from 'common/mixin';
       BackTop
     },
 
-    mixins: [itemListenerMixin],
+    mixins: [itemListenerMixin,backTopMixin],
     data() {
       return {
         banners: [],
@@ -68,7 +70,6 @@ import {itemListenerMixin} from 'common/mixin';
           'sell': {page: 0, list: []},
         },
         currentType: 'pop',
-        isShowBackTop: false,
         isTabFixed: false,
         tabOffsetTop: 0,
         saveY: 0,
@@ -85,9 +86,9 @@ import {itemListenerMixin} from 'common/mixin';
     created() {
       this.getHomeMultidata();
 
-      this.getHomeGoods('pop');
-      this.getHomeGoods('new');
-      this.getHomeGoods('sell');
+      this.getHomeGoods(POP);
+      this.getHomeGoods(NEW);
+      this.getHomeGoods(SELL);
 
       // 在create周期内拿$refs里面组件对象，
       // 或是在document.querySelector()拿，都有可能为空
@@ -147,13 +148,13 @@ import {itemListenerMixin} from 'common/mixin';
         this.$refs.tabControl1.currentIndex = index;
         this.$refs.tabControl2.currentIndex = index;
       },
-      backClick() {
-        // 通过$ref得到scoll对象，可以直接拿到对象里面属性方法
-        this.$refs.scroll.scrollTo(0, 0)
-      },
+      // backClick() {
+      //   // 通过$ref得到scoll对象，可以直接拿到对象里面属性方法
+      //   this.$refs.scroll.scrollTo(0, 0)
+      // },
       contentScroll(position) {
         // 如何纵坐标大于1000，我们就把小坐标给显示出来，点击它，可以返回顶部
-        this.isShowBackTop = (-position.y) > 1000
+        this.showBackTop = position.y < BACKTOP_DISTANCE
 
         // isTabFixed是一个boolean值，如果高度比tabOffsetTop高，我们就让标题吸顶
         // isTabFixed设置为true
@@ -202,6 +203,7 @@ import {itemListenerMixin} from 'common/mixin';
   }
 
   .home-nav {
+    /* --color-tint是我们在base.css中定义的css语法，定义为红色 */
     background-color: var(--color-tint);
     color: #fff;
 
